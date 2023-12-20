@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Application</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #taskForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<h1>Task Application</h1>
+
+<form id="taskForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="priorityLevel">Priority Level:</label>
+    <select id="priorityLevel" name="priorityLevel">
+        <option value="GREEN" style="background-color: green; color: white;">Green</option>
+        <option value="YELLOW" style="background-color: yellow; color: black;">Yellow</option>
+        <option value="ORANGE" style="background-color: orange; color: white;">Orange</option>
+        <option value="RED" style="background-color: red; color: white;">Red</option>
+    </select>
+
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId" name="userId" required>
+
+    <label for="reminderDate">Reminder Date:</label>
+    <input type="datetime-local" id="reminderDate" name="reminderDate" required>
+
+    <button type="button" onclick="sendTask()">Create Task</button>
+</form>
+
+<script>
+    function sendTask() {
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const priorityLevel = document.getElementById('priorityLevel').value;
+        const userId = document.getElementById('userId').value;
+        const reminderDate = document.getElementById('reminderDate').value;
+
+        const taskData = {
+            title: title,
+            description: description,
+            priorityLevel: priorityLevel,
+            userId: userId,
+            reminderDate: reminderDate
+        };
+
+        fetch('http://localhost:8080/task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taskData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Task created successfully!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error creating task. Please try again.');
+            });
+    }
+</script>
+</body>
+</html>
