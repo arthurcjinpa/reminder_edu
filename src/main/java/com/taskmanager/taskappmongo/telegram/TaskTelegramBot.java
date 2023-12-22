@@ -17,6 +17,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import static com.taskmanager.taskappmongo.telegram.utility.Converter.convertStringToMap;
 
 @Component
 public class TaskTelegramBot extends TelegramLongPollingBot {
@@ -47,10 +50,11 @@ public class TaskTelegramBot extends TelegramLongPollingBot {
             if ("/start".equals(messageText)) {
                 processStartMessage();
             }
-        // Buttons
+            // Buttons
         } else if (update.hasCallbackQuery()) {
             String callData = update.getCallbackQuery().getData();
-            if (callData.equals("register")) {
+            Map<String, String> callDataMap = convertStringToMap(callData);
+            if (callDataMap.containsKey("register")) {
                 registerAnswerButton(update);
             } else if (callData.contains("snooze")) {
                 reminderSnoozeAnswerButton(update);
@@ -74,10 +78,28 @@ public class TaskTelegramBot extends TelegramLongPollingBot {
     }
 
     private void reminderSnoozeAnswerButton(Update update) {
+        String taskId = "";
         String callData = update.getCallbackQuery().getData();
-        String taskId = callData.substring(callData.indexOf('-') + 1);
-        reminderService.snoozeReminder(taskId, 1, "minute");
+        Map<String, String> callDataMap = convertStringToMap(callData);
+
+        String snoozeUnit = "minute";
+        int snoozeTime;
+
+        if (callDataMap.containsKey("snooze15")) {
+            taskId = callDataMap.get("snooze15");
+            snoozeTime = 15;
+        } else if (callDataMap.containsKey("snooze30")) {
+            taskId = callDataMap.get("snooze15");
+            snoozeTime = 30;
+        } else {
+            snoozeUnit = "hour";
+            taskId = callDataMap.get("snooze1");
+            snoozeTime = 1;
+        }
+
+        reminderService.snoozeReminder(taskId, snoozeTime, snoozeUnit);
         String answer = "You will be notified later";
+
         EditMessageText newMessage =
                 messageService.createEditMessageText(answer, update);
         try {

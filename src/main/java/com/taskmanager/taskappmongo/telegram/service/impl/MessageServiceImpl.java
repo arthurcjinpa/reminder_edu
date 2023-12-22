@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.taskmanager.taskappmongo.telegram.utility.Converter.convertMapToString;
 import static java.lang.Math.toIntExact;
 
 @Service
@@ -20,6 +21,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public SendMessage sendRegisterMessage(long chatId) {
+        String callBackData;
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText("Click the 'Register' button to register");
@@ -28,7 +30,8 @@ public class MessageServiceImpl implements MessageService {
 
         InlineKeyboardButton registerButton = new InlineKeyboardButton();
         registerButton.setText("Register");
-        registerButton.setCallbackData("register");
+        callBackData = convertMapToString("register", "register");
+        registerButton.setCallbackData(callBackData);
 
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
         rowInline.add(registerButton);
