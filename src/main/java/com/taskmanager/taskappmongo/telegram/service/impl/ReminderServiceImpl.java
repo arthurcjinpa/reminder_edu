@@ -21,10 +21,14 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import static com.taskmanager.taskappmongo.telegram.utility.Converter.convertMapToString;
 
 @Service
 @RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
+    private static final Logger LOGGER = Logger.getLogger(ReminderServiceImpl.class.getName());
 
     private final TaskTelegramBot taskTelegramBot;
     private final TaskService taskService;
@@ -49,6 +53,7 @@ public class ReminderServiceImpl implements ReminderService {
         TaskEntity task = taskService.getTaskById(taskId);
         TaskEntity updatedTask = taskService.updateTaskReminderTime(task.getUserId(), taskId, time, timeUnit);
         long delayInSeconds = calculateDelayInSeconds(updatedTask.getReminderDate());
+        LOGGER.info("Task with id: " + taskId + " snoozed for " + time + " " + timeUnit);
 
         executorService.schedule(() -> {
             sendReminderNotification(updatedTask.getUserId(), taskId);
@@ -56,6 +61,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     private void sendReminderNotification(String userId, String taskId) {
+        String callBackData;
         TaskEntity task = taskService.getTaskById(taskId);
         UserProfile user = userService.getUserById(userId);
         SendMessage sendMessage = new SendMessage();
@@ -63,20 +69,25 @@ public class ReminderServiceImpl implements ReminderService {
         sendMessage.setText("Reminder: " + task.getTitle());
 
         List<List<InlineKeyboardButton>> InlineKeyboard = new ArrayList<>();
-
-        InlineKeyboardButton snoozeButton = new InlineKeyboardButton();
-        snoozeButton.setText("Snooze for 1 minute");
-        snoozeButton.setCallbackData("snooze-" + taskId);
+        InlineKeyboardButton snoozeButton15Minutes = createSnoozeMinutesButton("15", taskId);
+        InlineKeyboardButton snoozeButton30Minutes = createSnoozeMinutesButton("30", taskId);
+        InlineKeyboardButton snoozeButton1Hour = createSnoozeHoursButton("1", taskId);
 
         InlineKeyboardButton okButton = new InlineKeyboardButton();
         okButton.setText("OK");
-        okButton.setCallbackData("OK");
+        callBackData = convertMapToString("OK", taskId);
+        okButton.setCallbackData(callBackData);
 
-        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-        rowInline.add(snoozeButton);
-        rowInline.add(okButton);
+        List<InlineKeyboardButton> firstRowInline = new ArrayList<>();
+        firstRowInline.add(snoozeButton15Minutes);
+        firstRowInline.add(snoozeButton30Minutes);
 
-        InlineKeyboard.add(rowInline);
+        List<InlineKeyboardButton> secondRowInline = new ArrayList<>();
+        secondRowInline.add(snoozeButton1Hour);
+        secondRowInline.add(okButton);
+
+        InlineKeyboard.add(firstRowInline);
+        InlineKeyboard.add(secondRowInline);
         markupInline.setKeyboard(InlineKeyboard);
 
         sendMessage.setReplyMarkup(markupInline);
@@ -86,6 +97,22 @@ public class ReminderServiceImpl implements ReminderService {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private InlineKeyboardButton createSnoozeMinutesButton(String snoozeMinutes, String taskId) {
+        InlineKeyboardButton snoozeButton = new InlineKeyboardButton();
+        snoozeButton.setText("Snooze for " + snoozeMinutes + " minutes");
+        String callBackData = convertMapToString("snooze" + snoozeMinutes, taskId);
+        snoozeButton.setCallbackData(callBackData);
+        return snoozeButton;
+    }
+
+    private InlineKeyboardButton createSnoozeHoursButton(String snoozeHours, String taskId) {
+        InlineKeyboardButton snoozeButton = new InlineKeyboardButton();
+        snoozeButton.setText("Snooze for " + snoozeHours + " hour");
+        String callBackData = convertMapToString("snooze" + snoozeHours, taskId);
+        snoozeButton.setCallbackData(callBackData);
+        return snoozeButton;
     }
 
     private long calculateDelayInSeconds(LocalDateTime reminderDateTime) {
