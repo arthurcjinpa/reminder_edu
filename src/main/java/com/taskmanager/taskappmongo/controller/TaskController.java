@@ -2,8 +2,6 @@ package com.taskmanager.taskappmongo.controller;
 
 import com.taskmanager.taskappmongo.entity.TaskEntity;
 import com.taskmanager.taskappmongo.service.TaskService;
-import com.taskmanager.taskappmongo.entity.UserProfile;
-import com.taskmanager.taskappmongo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
