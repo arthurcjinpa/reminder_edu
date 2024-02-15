@@ -1,11 +1,11 @@
 package com.taskmanager.taskappmongo.telegram.service.impl;
 
 import com.taskmanager.taskappmongo.entity.TaskEntity;
-import com.taskmanager.taskappmongo.service.TaskService;
-import com.taskmanager.taskappmongo.telegram.TaskTelegramBot;
 import com.taskmanager.taskappmongo.entity.UserProfile;
-import com.taskmanager.taskappmongo.telegram.service.ReminderService;
+import com.taskmanager.taskappmongo.service.TaskService;
 import com.taskmanager.taskappmongo.service.UserService;
+import com.taskmanager.taskappmongo.telegram.TaskTelegramBot;
+import com.taskmanager.taskappmongo.telegram.service.ReminderService;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

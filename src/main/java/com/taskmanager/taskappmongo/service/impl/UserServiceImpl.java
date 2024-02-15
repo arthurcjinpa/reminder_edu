@@ -2,9 +2,9 @@ package com.taskmanager.taskappmongo.service.impl;
 
 import com.taskmanager.taskappmongo.entity.TaskEntity;
 import com.taskmanager.taskappmongo.entity.UserProfile;
+import com.taskmanager.taskappmongo.service.UserService;
 import com.taskmanager.taskappmongo.telegram.exception.UserNotFoundException;
 import com.taskmanager.taskappmongo.telegram.repository.UserRepository;
-import com.taskmanager.taskappmongo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

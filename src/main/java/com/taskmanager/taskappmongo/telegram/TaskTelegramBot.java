@@ -1,8 +1,8 @@
 package com.taskmanager.taskappmongo.telegram;
 
+import com.taskmanager.taskappmongo.service.UserService;
 import com.taskmanager.taskappmongo.telegram.service.MessageService;
 import com.taskmanager.taskappmongo.telegram.service.ReminderService;
-import com.taskmanager.taskappmongo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -78,7 +78,7 @@ public class TaskTelegramBot extends TelegramLongPollingBot {
     }
 
     private void reminderSnoozeAnswerButton(Update update) {
-        String taskId = "";
+        String taskId;
         String callData = update.getCallbackQuery().getData();
         Map<String, String> callDataMap = convertStringToMap(callData);
 
